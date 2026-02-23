@@ -4,6 +4,22 @@ const PARTICIPANTS = ["Antoine", "Florian", "François", "Jutha"];
 // Participants absents (Set mis à jour dynamiquement)
 const absentParticipants = new Set();
 
+// Participant sélectionné pour focus (null = pas de focus)
+let focusedPerson = null;
+
+// Persistance localStorage
+function saveState() {
+  localStorage.setItem("absents", JSON.stringify([...absentParticipants]));
+  localStorage.setItem("focused", focusedPerson ?? "");
+}
+
+function loadState() {
+  const absents = JSON.parse(localStorage.getItem("absents") || "[]");
+  absents.forEach((name) => absentParticipants.add(name));
+  const focused = localStorage.getItem("focused");
+  focusedPerson = focused || null;
+}
+
 // Date de début de la semaine 1 : 19 janvier 2026 (dimanche)
 const START_DATE = new Date("2026-01-19");
 const WEEK_CYCLE = 3; // Cycle de 3 semaines
@@ -92,6 +108,20 @@ function calculateReviews(weekNumber) {
   return reviews;
 }
 
+// Applique le filtre de focus : cache les lignes qui ne concernent pas la personne
+function applyFocus() {
+  document.querySelectorAll(".review-item").forEach((item) => {
+    if (!focusedPerson) {
+      item.style.display = "";
+    } else {
+      const match =
+        item.dataset.reviewer === focusedPerson ||
+        item.dataset.reviewee === focusedPerson;
+      item.style.display = match ? "" : "none";
+    }
+  });
+}
+
 // Fonction pour créer une section de semaine
 function createWeekSection(weekNumber, isCurrent) {
   const section = document.createElement("div");
@@ -112,6 +142,8 @@ function createWeekSection(weekNumber, isCurrent) {
   reviews.forEach((review) => {
     const reviewItem = document.createElement("div");
     reviewItem.className = "review-item";
+    reviewItem.dataset.reviewer = review.reviewer;
+    reviewItem.dataset.reviewee = review.reviewee || "";
 
     let revieweeHtml;
     if (review.reviewee === null) {
@@ -135,6 +167,25 @@ function createWeekSection(weekNumber, isCurrent) {
   return section;
 }
 
+// Initialise les boutons de focus
+function renderFocusPanel() {
+  const container = document.getElementById("focus-buttons");
+  container.innerHTML = "";
+  PARTICIPANTS.forEach((name) => {
+    if (absentParticipants.has(name)) return;
+    const btn = document.createElement("button");
+    btn.className = "focus-btn" + (focusedPerson === name ? " active" : "");
+    btn.textContent = name;
+    btn.addEventListener("click", () => {
+      focusedPerson = focusedPerson === name ? null : name;
+      saveState();
+      renderFocusPanel();
+      applyFocus();
+    });
+    container.appendChild(btn);
+  });
+}
+
 // Initialise les boutons d'absence
 function renderAbsencePanel() {
   const container = document.getElementById("absence-buttons");
@@ -150,8 +201,11 @@ function renderAbsencePanel() {
         absentParticipants.delete(name);
       } else {
         absentParticipants.add(name);
+        if (focusedPerson === name) focusedPerson = null;
       }
+      saveState();
       renderAbsencePanel();
+      renderFocusPanel();
       renderReviewList();
     });
     container.appendChild(btn);
@@ -174,10 +228,14 @@ function renderReviewList() {
   weeksContainer.appendChild(createWeekSection(previousWeek, false));
   weeksContainer.appendChild(createWeekSection(week, true));
   weeksContainer.appendChild(createWeekSection(nextWeek, false));
+
+  applyFocus();
 }
 
 // Initialiser l'application au chargement de la page
 document.addEventListener("DOMContentLoaded", () => {
+  loadState();
   renderAbsencePanel();
+  renderFocusPanel();
   renderReviewList();
 });

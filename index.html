@@ -1,21 +1,25 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Qui review qui ?</title>
-    <link rel="icon" type="image/x-icon" href="favicon.png">
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
+    <link rel="icon" type="image/x-icon" href="favicon.png" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
     <div class="container">
-        <main>
-            <div id="weeks-container" class="weeks-container">
-                <!-- Les semaines seront générées ici par JavaScript -->
-            </div>
-        </main>
+      <main>
+        <div class="absence-panel">
+          <div class="absence-title">Absences</div>
+          <div class="absence-buttons" id="absence-buttons"></div>
+        </div>
+        <div id="weeks-container" class="weeks-container">
+          <!-- Les semaines seront générées ici par JavaScript -->
+        </div>
+      </main>
     </div>
 
     <script src="app.js"></script>
-</body>
+  </body>
 </html>

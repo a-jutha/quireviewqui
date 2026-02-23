@@ -1,147 +1,204 @@
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    color: #333;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  color: #333;
 }
 
 .container {
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    max-width: 900px;
-    width: 100%;
-    overflow: hidden;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-width: 900px;
+  width: 100%;
+  overflow: hidden;
 }
 
 main {
-    padding: 30px;
+  padding: 30px;
 }
 
 .weeks-container {
-    display: flex;
-    gap: 20px;
-    justify-content: space-between;
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
 }
 
 .week-section {
-    flex: 1;
-    min-width: 250px;
+  flex: 1;
+  min-width: 250px;
 }
 
 .week-section.current {
-    transform: scale(1.05);
+  transform: scale(1.05);
 }
 
 .week-header {
-    text-align: center;
-    padding: 15px;
-    border-radius: 12px 12px 0 0;
-    font-weight: 600;
-    font-size: 1.1rem;
-    color: white;
-    background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+  text-align: center;
+  padding: 15px;
+  border-radius: 12px 12px 0 0;
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: white;
+  background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
 }
 
 .week-section.current .week-header {
-    background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
-    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+  background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
 }
 
 .review-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 15px;
-    background: #F8F9FA;
-    border-radius: 0 0 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 0 0 12px 12px;
 }
 
 .review-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 15px 20px;
-    background: white;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    border: 2px solid transparent;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 20px;
+  background: white;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
 }
 
 .review-item:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .reviewer {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #2C3E50;
-    flex: 1;
-    text-align: left;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #2c3e50;
+  flex: 1;
+  text-align: left;
 }
 
 .arrow {
-    font-size: 1.2rem;
-    color: #4A90E2;
-    margin: 0 10px;
-    font-weight: bold;
+  font-size: 1.2rem;
+  color: #4a90e2;
+  margin: 0 10px;
+  font-weight: bold;
 }
 
 .reviewee {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #2C3E50;
-    flex: 1;
-    text-align: right;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #2c3e50;
+  flex: 1;
+  text-align: right;
+}
+
+/* Absence panel */
+.absence-panel {
+  background: #f8f9fa;
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+}
+
+.absence-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #7f8c8d;
+  margin-bottom: 12px;
+}
+
+.absence-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.absence-btn {
+  padding: 8px 18px;
+  border-radius: 20px;
+  border: 2px solid #dee2e6;
+  background: white;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #2c3e50;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.absence-btn:hover {
+  border-color: #e74c3c;
+  color: #e74c3c;
+}
+
+.absence-btn.absent {
+  background: #e74c3c;
+  border-color: #e74c3c;
+  color: white;
+}
+
+.reviewee.redistributed {
+  color: #e67e22;
+}
+
+.reviewee.no-review {
+  color: #bdc3c7;
 }
 
 /* Responsive design */
 @media (max-width: 900px) {
-    .weeks-container {
-        flex-direction: column;
-    }
+  .weeks-container {
+    flex-direction: column;
+  }
 
-    .week-section {
-        min-width: 100%;
-    }
+  .week-section {
+    min-width: 100%;
+  }
 
-    .week-section.current {
-        transform: scale(1);
-        order: -1;
-    }
+  .week-section.current {
+    transform: scale(1);
+    order: -1;
+  }
 }
 
 @media (max-width: 600px) {
-    .review-item {
-        padding: 12px 15px;
-    }
+  .review-item {
+    padding: 12px 15px;
+  }
 
-    .reviewer,
-    .reviewee {
-        font-size: 0.9rem;
-    }
+  .reviewer,
+  .reviewee {
+    font-size: 0.9rem;
+  }
 
-    .arrow {
-        font-size: 1rem;
-        margin: 0 8px;
-    }
+  .arrow {
+    font-size: 1rem;
+    margin: 0 8px;
+  }
 
-    main {
-        padding: 20px;
-    }
+  main {
+    padding: 20px;
+  }
 
-    .week-header {
-        font-size: 1rem;
-        padding: 12px;
-    }
+  .week-header {
+    font-size: 1rem;
+    padding: 12px;
+  }
 }

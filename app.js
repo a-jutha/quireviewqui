@@ -164,10 +164,23 @@ function createWeekSection(weekNumber, isCurrent) {
     }
 
     reviewItem.innerHTML = `
-            <span class="reviewer">${review.reviewer}</span>
+            <span class="reviewer name-tag">${review.reviewer}</span>
             <span class="arrow">→</span>
             ${revieweeHtml}
         `;
+
+    // Clic sur un nom → sélection
+    reviewItem
+      .querySelectorAll(".name-tag, .reviewee:not(.no-review)")
+      .forEach((span) => {
+        span.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const name = span.textContent.trim();
+          focusedPerson = focusedPerson === name ? null : name;
+          saveState();
+          applyFocus();
+        });
+      });
 
     reviewList.appendChild(reviewItem);
   });
@@ -176,25 +189,6 @@ function createWeekSection(weekNumber, isCurrent) {
   section.appendChild(reviewList);
 
   return section;
-}
-
-// Initialise les boutons de focus
-function renderFocusPanel() {
-  const container = document.getElementById("focus-buttons");
-  container.innerHTML = "";
-  PARTICIPANTS.forEach((name) => {
-    if (absentParticipants.has(name)) return;
-    const btn = document.createElement("button");
-    btn.className = "focus-btn" + (focusedPerson === name ? " active" : "");
-    btn.textContent = name;
-    btn.addEventListener("click", () => {
-      focusedPerson = focusedPerson === name ? null : name;
-      saveState();
-      renderFocusPanel();
-      applyFocus();
-    });
-    container.appendChild(btn);
-  });
 }
 
 // Initialise les boutons d'absence
@@ -216,7 +210,6 @@ function renderAbsencePanel() {
       }
       saveState();
       renderAbsencePanel();
-      renderFocusPanel();
       renderReviewList();
     });
     container.appendChild(btn);
@@ -247,6 +240,5 @@ function renderReviewList() {
 document.addEventListener("DOMContentLoaded", () => {
   loadState();
   renderAbsencePanel();
-  renderFocusPanel();
   renderReviewList();
 });

@@ -92,6 +92,17 @@ main {
   text-align: left;
 }
 
+.name-tag,
+.reviewee:not(.no-review) {
+  cursor: pointer;
+}
+
+.name-tag:hover,
+.reviewee:not(.no-review):hover {
+  text-decoration: underline;
+  text-decoration-style: dotted;
+}
+
 .arrow {
   font-size: 1.2rem;
   color: #4a90e2;
@@ -151,53 +162,6 @@ main {
 .absence-btn.absent {
   background: #e74c3c;
   border-color: #e74c3c;
-  color: white;
-}
-
-/* Focus panel */
-.focus-panel {
-  background: #f8f9fa;
-  border: 2px solid #e9ecef;
-  border-radius: 12px;
-  padding: 16px 20px;
-  margin-bottom: 24px;
-}
-
-.focus-title {
-  font-size: 0.85rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: #7f8c8d;
-  margin-bottom: 12px;
-}
-
-.focus-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.focus-btn {
-  padding: 8px 18px;
-  border-radius: 20px;
-  border: 2px solid #dee2e6;
-  background: white;
-  font-weight: 600;
-  font-size: 0.9rem;
-  color: #2c3e50;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.focus-btn:hover {
-  border-color: #4a90e2;
-  color: #4a90e2;
-}
-
-.focus-btn.active {
-  background: #4a90e2;
-  border-color: #4a90e2;
   color: white;
 }
 

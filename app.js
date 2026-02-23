@@ -70,16 +70,30 @@ function getCurrentWeek() {
   };
 }
 
-// Résout la chaîne de review en sautant les absents
-function resolveReviewee(weekReviews, startReviewee) {
-  let reviewee = startReviewee;
+// Résout la chaîne de review en sautant les absents.
+// Si la chaîne boucle sur le reviewer lui-même, fallback sur le premier présent disponible.
+function resolveReviewee(weekReviews, reviewer) {
+  const base = weekReviews[reviewer];
+  let reviewee = base;
   const visited = new Set([reviewee]);
+
   while (absentParticipants.has(reviewee)) {
     const next = weekReviews[reviewee];
-    if (!next || visited.has(next)) break; // éviter une boucle infinie
+    if (!next || visited.has(next)) {
+      reviewee = null;
+      break;
+    }
     visited.add(next);
     reviewee = next;
   }
+
+  // Auto-review ou null → fallback : premier présent dans l'ordre des participants
+  if (reviewee === reviewer || reviewee === null) {
+    reviewee =
+      PARTICIPANTS.find((p) => p !== reviewer && !absentParticipants.has(p)) ??
+      null;
+  }
+
   return reviewee;
 }
 
@@ -87,21 +101,18 @@ function resolveReviewee(weekReviews, startReviewee) {
 function calculateReviews(weekNumber) {
   const reviews = [];
 
-  // weekNumber est entre 1 et 3, on doit utiliser l'index 0-2
   const matrixIndex = weekNumber - 1;
   const weekReviews = REVIEW_MATRIX[matrixIndex];
 
   PARTICIPANTS.forEach((reviewer) => {
-    // Ignorer complètement les reviewers absents
     if (absentParticipants.has(reviewer)) return;
 
     const baseReviewee = weekReviews[reviewer];
-    const finalReviewee = resolveReviewee(weekReviews, baseReviewee);
-    const isReviewerSelf = finalReviewee === reviewer;
+    const finalReviewee = resolveReviewee(weekReviews, reviewer);
     reviews.push({
       reviewer,
-      reviewee: isReviewerSelf ? null : finalReviewee,
-      redistributed: finalReviewee !== baseReviewee && !isReviewerSelf,
+      reviewee: finalReviewee,
+      redistributed: finalReviewee !== baseReviewee,
     });
   });
 

@@ -99,16 +99,42 @@ function resolveReviewee(weekReviews, reviewer) {
 
 // Fonction pour obtenir les reviews de la semaine actuelle (avec gestion des absences)
 function calculateReviews(weekNumber) {
-  const reviews = [];
-
   const matrixIndex = weekNumber - 1;
   const weekReviews = REVIEW_MATRIX[matrixIndex];
+  const present = PARTICIPANTS.filter((p) => !absentParticipants.has(p));
 
-  PARTICIPANTS.forEach((reviewer) => {
-    if (absentParticipants.has(reviewer)) return;
+  // Étape 1 : assignments initiaux via suivi de chaîne
+  const assignments = new Map();
+  present.forEach((reviewer) => {
+    assignments.set(reviewer, resolveReviewee(weekReviews, reviewer));
+  });
 
+  // Étape 2 : compter combien de fois chaque présent est reviewé
+  const reviewedCount = new Map(present.map((p) => [p, 0]));
+  assignments.forEach((reviewee) => {
+    if (reviewee && reviewedCount.has(reviewee)) {
+      reviewedCount.set(reviewee, reviewedCount.get(reviewee) + 1);
+    }
+  });
+
+  // Étape 3 : réassigner les reviewers en double vers les présents non-couverts
+  const unreviewed = present.filter((p) => reviewedCount.get(p) === 0);
+  unreviewed.forEach((missing) => {
+    for (const [rev, target] of assignments) {
+      if (target && reviewedCount.get(target) > 1 && rev !== missing) {
+        reviewedCount.set(target, reviewedCount.get(target) - 1);
+        assignments.set(rev, missing);
+        reviewedCount.set(missing, 1);
+        break;
+      }
+    }
+  });
+
+  // Construire le résultat final
+  const reviews = [];
+  present.forEach((reviewer) => {
     const baseReviewee = weekReviews[reviewer];
-    const finalReviewee = resolveReviewee(weekReviews, reviewer);
+    const finalReviewee = assignments.get(reviewer) ?? null;
     reviews.push({
       reviewer,
       reviewee: finalReviewee,

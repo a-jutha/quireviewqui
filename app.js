@@ -1,5 +1,13 @@
-// Liste des participants (ordre fixe selon l'image)
-const PARTICIPANTS = ["Antoine", "Florian", "François", "Jutha"];
+// Liste des participants (ordre fixe)
+const PARTICIPANTS = [
+  "Antoine",
+  "Awena",
+  "Daren",
+  "Florian",
+  "François",
+  "Jutha",
+  "MinhAnh",
+];
 
 // Participants absents (Set mis à jour dynamiquement)
 const absentParticipants = new Set();
@@ -22,35 +30,32 @@ function loadState() {
 
 // Date de début de la semaine 1 : 19 janvier 2026 (dimanche)
 const START_DATE = new Date("2026-01-19");
-const WEEK_CYCLE = 3; // Cycle de 3 semaines
+const WEEK_CYCLE = Math.max(PARTICIPANTS.length - 1, 1);
 
-// Matrice des reviews basée sur l'image fournie
+// Génère une rotation circulaire: en semaine k, chacun review la personne k positions avant lui.
 // reviewMatrix[semaine-1][reviewer] = reviewee
-const REVIEW_MATRIX = {
-  0: {
-    // Semaine 1
-    Antoine: "Jutha",
-    Florian: "Antoine",
-    François: "Florian",
-    Jutha: "François",
-  },
-  1: {
-    // Semaine 2
-    Antoine: "François",
-    Florian: "Jutha",
-    François: "Antoine",
-    Jutha: "Florian",
-  },
-  2: {
-    // Semaine 3
-    Antoine: "Florian",
-    Florian: "François",
-    François: "Jutha",
-    Jutha: "Antoine",
-  },
-};
+function buildReviewMatrix() {
+  const matrix = {};
 
-// Fonction pour calculer la semaine actuelle (1, 2 ou 3) à partir du 19 janvier 2026
+  for (let weekIndex = 0; weekIndex < WEEK_CYCLE; weekIndex += 1) {
+    const offset = weekIndex + 1;
+    const weekMap = {};
+
+    PARTICIPANTS.forEach((reviewer, index) => {
+      const revieweeIndex =
+        (index - offset + PARTICIPANTS.length) % PARTICIPANTS.length;
+      weekMap[reviewer] = PARTICIPANTS[revieweeIndex];
+    });
+
+    matrix[weekIndex] = weekMap;
+  }
+
+  return matrix;
+}
+
+const REVIEW_MATRIX = buildReviewMatrix();
+
+// Fonction pour calculer la semaine actuelle (1..WEEK_CYCLE) à partir du 19 janvier 2026
 function getCurrentWeek() {
   const now = new Date();
 
@@ -61,7 +66,7 @@ function getCurrentWeek() {
   // Calculer le nombre de semaines écoulées (une semaine = 7 jours)
   const weeksPassed = Math.floor(diffDays / 7);
 
-  // Calculer la semaine actuelle dans le cycle (1, 2, ou 3)
+  // Calculer la semaine actuelle dans le cycle
   const cycleWeek = (weeksPassed % WEEK_CYCLE) + 1;
 
   return {
@@ -247,8 +252,8 @@ function renderReviewList() {
   const { week } = getCurrentWeek();
 
   // Calculer les semaines à afficher (précédente, actuelle, suivante)
-  const previousWeek = week === 1 ? 3 : week - 1;
-  const nextWeek = week === 3 ? 1 : week + 1;
+  const previousWeek = ((week - 2 + WEEK_CYCLE) % WEEK_CYCLE) + 1;
+  const nextWeek = (week % WEEK_CYCLE) + 1;
 
   // Générer les 3 sections de semaines
   const weeksContainer = document.getElementById("weeks-container");

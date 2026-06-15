@@ -9,40 +9,40 @@
   --font-body: 'Inter', sans-serif;
   --font-title: 'Outfit', sans-serif;
   
-  /* Color Palette - Premium Dark Theme */
-  --bg-dark: #090d16;
-  --bg-card: rgba(17, 25, 40, 0.75);
-  --border-glass: rgba(255, 255, 255, 0.08);
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
+  /* Color Palette - Premium Pure White Theme (Inverted) */
+  --bg-dark: #ffffff;
+  --bg-card: rgba(255, 255, 255, 0.9);
+  --border-glass: rgba(0, 0, 0, 0.08);
+  --text-primary: #000000;
+  --text-secondary: #71717a; /* zinc-500 */
+  --text-muted: #a1a1aa; /* zinc-400 */
   
-  /* Accents */
-  --accent-primary: #6366f1; /* Indigo */
-  --accent-secondary: #4f46e5;
-  --accent-glow: rgba(99, 102, 241, 0.15);
+  /* Accents - Pure Black Highlight */
+  --accent-primary: #000000;
+  --accent-secondary: #3f3f46; /* zinc-700 */
+  --accent-glow: rgba(0, 0, 0, 0.08);
   
-  /* Role Colors */
-  --role-s-bg: rgba(139, 92, 246, 0.15);
-  --role-s-text: #c084fc;
-  --role-s-border: rgba(139, 92, 246, 0.3);
+  /* Role Colors - Sobres */
+  --role-s-bg: rgba(0, 0, 0, 0.03);
+  --role-s-text: #27272a;
+  --role-s-border: rgba(0, 0, 0, 0.08);
   
-  --role-j-bg: rgba(16, 185, 129, 0.15);
-  --role-j-text: #34d399;
-  --role-j-border: rgba(16, 185, 129, 0.3);
+  --role-j-bg: rgba(0, 0, 0, 0.03);
+  --role-j-text: #27272a;
+  --role-j-border: rgba(0, 0, 0, 0.08);
   
   /* Absence Colors */
-  --absent-bg: rgba(244, 63, 94, 0.2);
-  --absent-text: #fda4af;
-  --absent-border: rgba(244, 63, 94, 0.4);
+  --absent-bg: rgba(239, 68, 68, 0.08);
+  --absent-text: #dc2626;
+  --absent-border: rgba(239, 68, 68, 0.2);
   
   /* Redirection Color */
-  --redistributed-color: #fb923c; /* Orange */
+  --redistributed-color: #71717a; /* zinc-500 */
 }
 
 body {
   font-family: var(--font-body);
-  background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, var(--bg-dark) 70%);
+  background: #ffffff;
   min-height: 100vh;
   display: flex;
   justify-content: center;
@@ -55,11 +55,9 @@ body {
 /* Glassmorphism Container */
 .container {
   background: var(--bg-card);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border-glass);
   border-radius: 24px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
   max-width: 1100px;
   width: 100%;
   overflow: hidden;
@@ -80,7 +78,7 @@ body {
   font-weight: 800;
   letter-spacing: -0.03em;
   margin-bottom: 8px;
-  background: linear-gradient(135deg, #a5b4fc 0%, #818cf8 50%, #c084fc 100%);
+  background: linear-gradient(135deg, #000000 0%, #71717a 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -98,7 +96,7 @@ main {
 
 /* Absence Panel */
 .absence-panel {
-  background: rgba(30, 41, 59, 0.4);
+  background: rgba(244, 244, 245, 0.5); /* Zinc-100 */
   border: 1px solid var(--border-glass);
   border-radius: 16px;
   padding: 20px;
@@ -128,7 +126,7 @@ main {
   padding: 10px 20px;
   border-radius: 9999px;
   border: 1px solid var(--border-glass);
-  background: rgba(51, 65, 85, 0.3);
+  background: rgba(244, 244, 245, 0.85);
   font-weight: 600;
   font-size: 0.9rem;
   color: var(--text-primary);
@@ -137,10 +135,10 @@ main {
 }
 
 .absence-btn:hover {
-  background: rgba(99, 102, 241, 0.1);
+  background: rgba(0, 0, 0, 0.04);
   border-color: var(--accent-primary);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
 .absence-btn.absent {
@@ -150,8 +148,8 @@ main {
 }
 
 .absence-btn.absent:hover {
-  background: rgba(244, 63, 94, 0.3);
-  border-color: #f43f5e;
+  background: rgba(239, 68, 68, 0.15);
+  border-color: #ef4444;
 }
 
 /* Role Badges */
@@ -201,26 +199,34 @@ main {
   border-radius: 16px;
   overflow: hidden;
   border: 1px solid var(--border-glass);
-  background: rgba(15, 23, 42, 0.4);
+  background: rgba(244, 244, 245, 0.45);
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .week-section.current {
   transform: scale(1.01);
   border-color: var(--accent-primary);
-  box-shadow: 0 10px 30px -10px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.12);
 }
 
 /* Week Header */
 .week-header {
   padding: 20px;
   text-align: center;
-  background: rgba(30, 41, 59, 0.6);
+  background: rgba(244, 244, 245, 0.8);
   border-bottom: 1px solid var(--border-glass);
 }
 
 .week-section.current .week-header {
   background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+}
+
+.week-section.current .week-title {
+  color: #ffffff;
+}
+
+.week-section.current .week-dates {
+  color: #d4d4d8; /* zinc-300 */
 }
 
 .week-title {
@@ -241,26 +247,26 @@ main {
 }
 
 .week-section.current .week-dates {
-  color: #c7d2fe;
+  color: #d4d4d8; /* zinc-300 */
 }
 
 /* "Current" badge on active week */
 .current-badge {
   background: #ffffff;
-  color: var(--accent-secondary);
+  color: #000000;
   font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
   padding: 2px 8px;
   border-radius: 9999px;
   letter-spacing: 0.05em;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 
 /* Review Chain Container */
 .chain-container {
   padding: 24px;
-  background: rgba(15, 23, 42, 0.2);
+  background: rgba(244, 244, 245, 0.3);
   border-radius: 0 0 16px 16px;
   display: flex;
   justify-content: center;
@@ -291,7 +297,7 @@ main {
 .chain-node {
   display: inline-block;
   padding: 5px 12px;
-  background: rgba(30, 41, 59, 0.45);
+  background: rgba(244, 244, 245, 0.9);
   border: 1px solid var(--border-glass);
   border-radius: 8px;
   font-size: 0.85rem;
@@ -306,7 +312,7 @@ main {
   font-family: var(--font-title);
   font-size: 1rem;
   font-weight: 800;
-  color: var(--accent-primary);
+  color: var(--text-primary);
   opacity: 0.8;
   user-select: none;
   padding: 0 2px;
@@ -317,8 +323,6 @@ main {
 }
 
 /* Responsive design */
-
-
 @media (max-width: 600px) {
   body {
     padding: 20px 10px;

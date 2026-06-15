@@ -34,28 +34,20 @@ const START_DATE = new Date("2026-06-15T00:00:00");
 // Participants absents (Set mis à jour dynamiquement)
 const absentParticipants = new Set();
 
-// Participant sélectionné pour focus (null = pas de focus)
-let focusedPerson = null;
-
 // Persistance localStorage
 function saveState() {
   localStorage.setItem("absents", JSON.stringify([...absentParticipants]));
-  localStorage.setItem("focused", focusedPerson ?? "");
 }
 
 function loadState() {
   const absents = JSON.parse(localStorage.getItem("absents") || "[]");
   absents.forEach((name) => {
-    // Migration s'il y avait l'ancien nom sans espace
     let cleanName = name;
     if (name === "MinhAnh") cleanName = "Minh Anh";
     if (PARTICIPANTS.includes(cleanName)) {
       absentParticipants.add(cleanName);
     }
   });
-  const focused = localStorage.getItem("focused");
-  focusedPerson = focused || null;
-  if (focusedPerson === "MinhAnh") focusedPerson = "Minh Anh";
 }
 
 // Calcul des informations du cycle actuel
@@ -216,50 +208,6 @@ function calculateReviews(weekNumber) {
   return reviews;
 }
 
-// Applique le focus visuel (met en valeur les reviews concernant la personne)
-function applyFocus() {
-  const nodes = document.querySelectorAll(".chain-node");
-  const arrows = document.querySelectorAll(".chain-arrow");
-  
-  if (!focusedPerson) {
-    nodes.forEach((n) => n.classList.remove("highlighted", "dimmed"));
-    arrows.forEach((a) => a.classList.remove("highlighted", "dimmed"));
-  } else {
-    nodes.forEach((n) => {
-      const name = n.dataset.name;
-      if (name === focusedPerson) {
-        n.classList.add("highlighted");
-        n.classList.remove("dimmed");
-      } else {
-        n.classList.add("dimmed");
-        n.classList.remove("highlighted");
-      }
-    });
-
-    arrows.forEach((a) => {
-      const from = a.dataset.from;
-      const to = a.dataset.to;
-      if (from === focusedPerson || to === focusedPerson) {
-        a.classList.add("highlighted");
-        a.classList.remove("dimmed");
-      } else {
-        a.classList.add("dimmed");
-        a.classList.remove("highlighted");
-      }
-    });
-  }
-
-  // Met à jour la classe active sur les boutons d'absence pour le focus
-  document.querySelectorAll(".absence-btn").forEach((btn) => {
-    const name = btn.dataset.name;
-    if (focusedPerson === name) {
-      btn.classList.add("focused-user");
-    } else {
-      btn.classList.remove("focused-user");
-    }
-  });
-}
-
 // Crée le DOM pour une section de semaine
 function createWeekSection(weekNumber, isCurrent, weekStartDate) {
   const section = document.createElement("section");
@@ -301,7 +249,6 @@ function createWeekSection(weekNumber, isCurrent, weekStartDate) {
   } else {
     // Reconstruire le cycle à partir de la liste des reviews
     const present = PARTICIPANTS.filter((p) => !absentParticipants.has(p));
-    // Commencer par le premier présent disponible dans l'ordre initial
     const startNode = present[0];
     
     const cycleNodes = [];
@@ -332,33 +279,18 @@ function createWeekSection(weekNumber, isCurrent, weekStartDate) {
       const nodeName = cycleNodes[i];
       
       const nodeSpan = document.createElement("span");
-      nodeSpan.className = "chain-node name-tag";
-      nodeSpan.dataset.name = nodeName;
+      nodeSpan.className = "chain-node";
       nodeSpan.textContent = nodeName;
-      
-      nodeSpan.addEventListener("click", (e) => {
-        e.stopPropagation();
-        focusedPerson = focusedPerson === nodeName ? null : nodeName;
-        saveState();
-        applyFocus();
-      });
-
       chainEl.appendChild(nodeSpan);
 
       // Flèche de liaison
       if (i < cycleNodes.length - 1) {
-        const nextNodeName = cycleNodes[i + 1];
-        const isRedistributed = redistributedMap.get(nodeName);
-        
         const arrowSpan = document.createElement("span");
         arrowSpan.className = "chain-arrow";
-        if (isRedistributed) {
+        if (redistributedMap.get(nodeName)) {
           arrowSpan.classList.add("redistributed");
         }
-        arrowSpan.dataset.from = nodeName;
-        arrowSpan.dataset.to = nextNodeName;
         arrowSpan.textContent = " → ";
-        
         chainEl.appendChild(arrowSpan);
       }
     }
@@ -379,17 +311,11 @@ function renderAbsencePanel() {
   
   PARTICIPANTS.forEach((name) => {
     const btn = document.createElement("button");
-    const role = ROLES[name];
-    
     btn.className = "absence-btn";
     if (absentParticipants.has(name)) {
       btn.classList.add("absent");
     }
-    if (focusedPerson === name) {
-      btn.classList.add("focused-user");
-    }
     
-    btn.dataset.name = name;
     btn.innerHTML = `<span class="btn-name">${name}</span>`;
     btn.setAttribute("aria-pressed", absentParticipants.has(name).toString());
     
@@ -398,7 +324,6 @@ function renderAbsencePanel() {
         absentParticipants.delete(name);
       } else {
         absentParticipants.add(name);
-        if (focusedPerson === name) focusedPerson = null;
       }
       saveState();
       renderAbsencePanel();
@@ -422,8 +347,6 @@ function renderReviewList() {
     const weekStartDate = new Date(cycleStartDate.getTime() + i * 7 * 24 * 60 * 60 * 1000);
     weeksContainer.appendChild(createWeekSection(weekNum, isCurrent, weekStartDate));
   }
-
-  applyFocus();
 }
 
 // Initialisation au chargement du DOM
@@ -431,13 +354,4 @@ document.addEventListener("DOMContentLoaded", () => {
   loadState();
   renderAbsencePanel();
   renderReviewList();
-  
-  // Permet de désactiver le focus si on clique à côté
-  document.addEventListener("click", () => {
-    if (focusedPerson) {
-      focusedPerson = null;
-      saveState();
-      applyFocus();
-    }
-  });
 });

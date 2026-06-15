@@ -297,30 +297,8 @@ main {
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-primary);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  cursor: pointer;
   user-select: none;
-}
-
-.chain-node:hover {
-  background: rgba(99, 102, 241, 0.15);
-  border-color: var(--accent-primary);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
-}
-
-/* Interactivity: Focus & Highlight on Nodes */
-.chain-node.highlighted {
-  background: rgba(99, 102, 241, 0.25);
-  border-color: var(--accent-primary);
-  box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
-  transform: translateY(-2px) scale(1.05);
-}
-
-.chain-node.dimmed {
-  opacity: 0.25;
-  filter: blur(0.4px);
-  transform: scale(0.95);
+  cursor: default;
 }
 
 /* Chain Link Arrow */
@@ -330,32 +308,12 @@ main {
   font-weight: 800;
   color: var(--accent-primary);
   opacity: 0.8;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   user-select: none;
   padding: 0 2px;
 }
 
 .chain-arrow.redistributed {
   color: var(--redistributed-color);
-}
-
-/* Interactivity: Focus on Arrows */
-.chain-arrow.highlighted {
-  opacity: 1;
-  color: #ffffff;
-  text-shadow: 0 0 8px var(--accent-primary);
-  transform: scale(1.2);
-}
-
-.chain-arrow.dimmed {
-  opacity: 0.15;
-}
-
-/* Pulse highlight on focused user button in absence panel */
-.absence-btn.focused-user {
-  border-color: var(--accent-primary);
-  background: rgba(99, 102, 241, 0.2);
-  box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
 }
 
 /* Responsive design */

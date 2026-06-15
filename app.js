@@ -96,14 +96,73 @@ function formatDateRange(startDate) {
   return `Du ${format(startDate)} au ${format(endDate)}`;
 }
 
-// Calcule les reviews d'une semaine en suivant la boucle et en sautant les absents
+// Génère les permutations d'un tableau (utilisé pour trouver les cycles)
+function getPermutations(array) {
+  if (array.length === 0) return [[]];
+  const result = [];
+  for (let i = 0; i < array.length; i++) {
+    const current = array[i];
+    const remaining = array.slice(0, i).concat(array.slice(i + 1));
+    const remainingPerms = getPermutations(remaining);
+    for (let j = 0; j < remainingPerms.length; j++) {
+      result.push([current].concat(remainingPerms[j]));
+    }
+  }
+  return result;
+}
+
+// Génère tous les cycles uniques contenant un ensemble d'éléments
+function getCycles(elements) {
+  if (elements.length === 0) return [];
+  const first = elements[0];
+  const rest = elements.slice(1);
+  const perms = getPermutations(rest);
+  return perms.map((p) => [first].concat(p));
+}
+
+// Calcule le score d'un cycle en maximisant le fait qu'un Senior review un Junior,
+// et en restant le plus proche possible de la boucle initiale.
+function scoreCycle(cycle, baseLoop) {
+  let score = 0;
+  const k = cycle.length;
+
+  for (let i = 0; i < k; i++) {
+    const x = cycle[i];
+    const y = cycle[(i + 1) % k];
+    
+    const roleX = ROLES[x];
+    const roleY = ROLES[y];
+    
+    // Bonus pour alternance (Senior -> Junior et Junior -> Senior)
+    if (roleX === "S" && roleY === "J") {
+      score += 100;
+    } else if (roleX === "J" && roleY === "S") {
+      score += 100;
+    } else if (roleX === "J" && roleY === "J") {
+      score -= 50; // Pénalité forte si un Junior review un Junior
+    } else if (roleX === "S" && roleY === "S") {
+      score -= 10; // Pénalité faible si un Senior review un Senior
+    }
+    
+    // Bonus de proximité pour conserver l'ordre initial (distance circulaire)
+    const idxX = baseLoop.indexOf(x);
+    const idxY = baseLoop.indexOf(y);
+    if (idxX !== -1 && idxY !== -1) {
+      const dist = (idxY - idxX + baseLoop.length) % baseLoop.length;
+      score += 20 / dist;
+    }
+  }
+  
+  return score;
+}
+
+// Calcule les reviews d'une semaine en optimisant la boucle circulaire
 function calculateReviews(weekNumber) {
   const loop = WEEK_LOOPS[weekNumber];
   if (!loop) return [];
 
   const present = PARTICIPANTS.filter((p) => !absentParticipants.has(p));
   
-  // S'il n'y a pas assez de monde pour faire des reviews
   if (present.length <= 1) {
     return present.map((reviewer) => ({
       reviewer,
@@ -112,39 +171,46 @@ function calculateReviews(weekNumber) {
     }));
   }
 
-  const reviews = [];
-
-  present.forEach((reviewer) => {
-    const index = loop.indexOf(reviewer);
-    if (index === -1) return;
-
-    let reviewee = null;
-    let nextIndex = index;
-    
-    // On parcourt la boucle circulaire pour trouver le prochain présent
-    for (let i = 0; i < loop.length; i++) {
-      nextIndex = (nextIndex + 1) % loop.length;
-      const candidate = loop[nextIndex];
-      
-      if (candidate === reviewer) {
-        break; // Évite l'auto-review
-      }
-      
-      if (!absentParticipants.has(candidate)) {
-        reviewee = candidate;
-        break;
-      }
+  // 1. Générer tous les cycles possibles de la taille des personnes présentes
+  const cycles = getCycles(present);
+  
+  // 2. Trouver le cycle avec le score le plus élevé
+  let bestCycle = null;
+  let maxScore = -Infinity;
+  
+  cycles.forEach((cycle) => {
+    const score = scoreCycle(cycle, loop);
+    if (score > maxScore) {
+      maxScore = score;
+      bestCycle = cycle;
     }
+  });
 
-    // Indique s'il y a eu un saut d'absent (redistribution)
-    const baseNext = loop[(index + 1) % loop.length];
+  // 3. Convertir le meilleur cycle en reviews
+  const reviewsMap = new Map();
+  const k = bestCycle.length;
+  for (let i = 0; i < k; i++) {
+    const reviewer = bestCycle[i];
+    const reviewee = bestCycle[(i + 1) % k];
+    
+    // Indique s'il y a eu une déviation par rapport à la boucle de base
+    const baseIdx = loop.indexOf(reviewer);
+    const baseNext = loop[(baseIdx + 1) % loop.length];
     const redistributed = baseNext !== reviewee;
-
-    reviews.push({
+    
+    reviewsMap.set(reviewer, {
       reviewer,
       reviewee,
       redistributed,
     });
+  }
+
+  // 4. Ordonner les reviews selon l'ordre initial des participants
+  const reviews = [];
+  PARTICIPANTS.forEach((p) => {
+    if (reviewsMap.has(p)) {
+      reviews.push(reviewsMap.get(p));
+    }
   });
 
   return reviews;

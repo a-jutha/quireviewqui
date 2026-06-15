@@ -218,22 +218,36 @@ function calculateReviews(weekNumber) {
 
 // Applique le focus visuel (met en valeur les reviews concernant la personne)
 function applyFocus() {
-  document.querySelectorAll(".review-item").forEach((item) => {
-    if (!focusedPerson) {
-      item.classList.remove("highlighted", "dimmed");
-    } else {
-      const isReviewer = item.dataset.reviewer === focusedPerson;
-      const isReviewee = item.dataset.reviewee === focusedPerson;
-      
-      if (isReviewer || isReviewee) {
-        item.classList.add("highlighted");
-        item.classList.remove("dimmed");
+  const nodes = document.querySelectorAll(".chain-node");
+  const arrows = document.querySelectorAll(".chain-arrow");
+  
+  if (!focusedPerson) {
+    nodes.forEach((n) => n.classList.remove("highlighted", "dimmed"));
+    arrows.forEach((a) => a.classList.remove("highlighted", "dimmed"));
+  } else {
+    nodes.forEach((n) => {
+      const name = n.dataset.name;
+      if (name === focusedPerson) {
+        n.classList.add("highlighted");
+        n.classList.remove("dimmed");
       } else {
-        item.classList.add("dimmed");
-        item.classList.remove("highlighted");
+        n.classList.add("dimmed");
+        n.classList.remove("highlighted");
       }
-    }
-  });
+    });
+
+    arrows.forEach((a) => {
+      const from = a.dataset.from;
+      const to = a.dataset.to;
+      if (from === focusedPerson || to === focusedPerson) {
+        a.classList.add("highlighted");
+        a.classList.remove("dimmed");
+      } else {
+        a.classList.add("dimmed");
+        a.classList.remove("highlighted");
+      }
+    });
+  }
 
   // Met à jour la classe active sur les boutons d'absence pour le focus
   document.querySelectorAll(".absence-btn").forEach((btn) => {
@@ -273,9 +287,9 @@ function createWeekSection(weekNumber, isCurrent, weekStartDate) {
   header.appendChild(title);
   header.appendChild(dates);
 
-  // Liste des reviews
-  const reviewList = document.createElement("div");
-  reviewList.className = "review-list";
+  // Conteneur de la chaîne de review
+  const chainContainer = document.createElement("div");
+  chainContainer.className = "chain-container";
 
   const reviews = calculateReviews(weekNumber);
 
@@ -283,57 +297,77 @@ function createWeekSection(weekNumber, isCurrent, weekStartDate) {
     const emptyMsg = document.createElement("div");
     emptyMsg.className = "empty-reviews";
     emptyMsg.textContent = "Aucun participant présent";
-    reviewList.appendChild(emptyMsg);
+    chainContainer.appendChild(emptyMsg);
   } else {
-    reviews.forEach((review) => {
-      const reviewItem = document.createElement("div");
-      reviewItem.className = "review-item";
-      reviewItem.dataset.reviewer = review.reviewer;
-      reviewItem.dataset.reviewee = review.reviewee || "";
-
-      const rRole = ROLES[review.reviewer];
-      
-      let revieweeHtml;
-      if (review.reviewee === null) {
-        revieweeHtml = `<span class="reviewee no-review">—</span>`;
-      } else {
-        const reClass = review.redistributed ? " redistributed" : "";
-        revieweeHtml = `
-          <span class="reviewee${reClass}">
-            <span class="name-text">${review.reviewee}</span>
-          </span>
-        `;
-      }
-
-      reviewItem.innerHTML = `
-        <span class="reviewer name-tag">
-          <span class="name-text">${review.reviewer}</span>
-        </span>
-        <span class="arrow" aria-hidden="true">→</span>
-        ${revieweeHtml}
-      `;
-
-      // Clic sur un nom pour focus
-      reviewItem
-        .querySelectorAll(".name-tag, .reviewee:not(.no-review)")
-        .forEach((span) => {
-          span.addEventListener("click", (e) => {
-            e.stopPropagation();
-            const nameSpan = span.querySelector(".name-text");
-            if (!nameSpan) return;
-            const name = nameSpan.textContent.trim();
-            focusedPerson = focusedPerson === name ? null : name;
-            saveState();
-            applyFocus();
-          });
-        });
-
-      reviewList.appendChild(reviewItem);
+    // Reconstruire le cycle à partir de la liste des reviews
+    const present = PARTICIPANTS.filter((p) => !absentParticipants.has(p));
+    // Commencer par le premier présent disponible dans l'ordre initial
+    const startNode = present[0];
+    
+    const cycleNodes = [];
+    let current = startNode;
+    const visited = new Set();
+    
+    const revieweeMap = new Map();
+    const redistributedMap = new Map();
+    reviews.forEach((r) => {
+      revieweeMap.set(r.reviewer, r.reviewee);
+      redistributedMap.set(r.reviewer, r.redistributed);
     });
+
+    while (current && !visited.has(current)) {
+      cycleNodes.push(current);
+      visited.add(current);
+      current = revieweeMap.get(current);
+    }
+    
+    if (cycleNodes.length > 0) {
+      cycleNodes.push(startNode);
+    }
+
+    const chainEl = document.createElement("div");
+    chainEl.className = "review-chain";
+
+    for (let i = 0; i < cycleNodes.length; i++) {
+      const nodeName = cycleNodes[i];
+      
+      const nodeSpan = document.createElement("span");
+      nodeSpan.className = "chain-node name-tag";
+      nodeSpan.dataset.name = nodeName;
+      nodeSpan.textContent = nodeName;
+      
+      nodeSpan.addEventListener("click", (e) => {
+        e.stopPropagation();
+        focusedPerson = focusedPerson === nodeName ? null : nodeName;
+        saveState();
+        applyFocus();
+      });
+
+      chainEl.appendChild(nodeSpan);
+
+      // Flèche de liaison
+      if (i < cycleNodes.length - 1) {
+        const nextNodeName = cycleNodes[i + 1];
+        const isRedistributed = redistributedMap.get(nodeName);
+        
+        const arrowSpan = document.createElement("span");
+        arrowSpan.className = "chain-arrow";
+        if (isRedistributed) {
+          arrowSpan.classList.add("redistributed");
+        }
+        arrowSpan.dataset.from = nodeName;
+        arrowSpan.dataset.to = nextNodeName;
+        arrowSpan.textContent = " → ";
+        
+        chainEl.appendChild(arrowSpan);
+      }
+    }
+    
+    chainContainer.appendChild(chainEl);
   }
 
   section.appendChild(header);
-  section.appendChild(reviewList);
+  section.appendChild(chainContainer);
 
   return section;
 }

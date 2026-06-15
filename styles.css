@@ -189,8 +189,8 @@ main {
 /* Weeks Container & Layout */
 .weeks-container {
   display: flex;
-  gap: 24px;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 28px;
 }
 
 .week-section {
@@ -206,7 +206,7 @@ main {
 }
 
 .week-section.current {
-  transform: scale(1.02);
+  transform: scale(1.01);
   border-color: var(--accent-primary);
   box-shadow: 0 10px 30px -10px rgba(99, 102, 241, 0.3);
 }
@@ -257,12 +257,14 @@ main {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Review List */
-.review-list {
+/* Review Chain Container */
+.chain-container {
+  padding: 24px;
+  background: rgba(15, 23, 42, 0.2);
+  border-radius: 0 0 16px 16px;
   display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 20px;
+  justify-content: center;
+  align-items: center;
   flex: 1;
 }
 
@@ -274,86 +276,79 @@ main {
   font-size: 0.9rem;
 }
 
-/* Review Items */
-.review-item {
+/* Review Chain */
+.review-chain {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  padding: 14px 18px;
-  background: rgba(30, 41, 59, 0.3);
+  justify-content: center;
+  gap: 8px 6px;
+  padding: 10px 0;
+  line-height: 1.6;
+}
+
+/* Chain Node (Developer tag) */
+.chain-node {
+  display: inline-block;
+  padding: 5px 12px;
+  background: rgba(30, 41, 59, 0.45);
   border: 1px solid var(--border-glass);
-  border-radius: 12px;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.review-item:hover {
-  background: rgba(30, 41, 59, 0.5);
-  border-color: rgba(255, 255, 255, 0.15);
-  transform: translateX(2px);
-}
-
-.reviewer,
-.reviewee {
-  font-size: 0.95rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-primary);
-  display: flex;
-  align-items: center;
-}
-
-.reviewer {
-  flex: 1;
-  text-align: left;
-}
-
-.reviewee {
-  flex: 1;
-  justify-content: flex-end;
-  text-align: right;
-}
-
-.name-tag,
-.reviewee:not(.no-review) {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: pointer;
-  position: relative;
+  user-select: none;
 }
 
-.name-tag:hover .name-text,
-.reviewee:not(.no-review):hover .name-text {
-  color: var(--accent-primary);
-  text-shadow: 0 0 8px rgba(99, 102, 241, 0.4);
+.chain-node:hover {
+  background: rgba(99, 102, 241, 0.15);
+  border-color: var(--accent-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
 }
 
-.arrow {
-  font-size: 1.1rem;
+/* Interactivity: Focus & Highlight on Nodes */
+.chain-node.highlighted {
+  background: rgba(99, 102, 241, 0.25);
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
+  transform: translateY(-2px) scale(1.05);
+}
+
+.chain-node.dimmed {
+  opacity: 0.25;
+  filter: blur(0.4px);
+  transform: scale(0.95);
+}
+
+/* Chain Link Arrow */
+.chain-arrow {
+  font-family: var(--font-title);
+  font-size: 1rem;
+  font-weight: 800;
   color: var(--accent-primary);
-  margin: 0 16px;
-  font-weight: 700;
-  display: inline-block;
   opacity: 0.8;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  padding: 0 2px;
 }
 
-.reviewee.no-review {
-  color: var(--text-muted);
-  font-weight: 400;
-}
-
-.reviewee.redistributed .name-text {
+.chain-arrow.redistributed {
   color: var(--redistributed-color);
 }
 
-/* Interactivity: Focusing & Dimming */
-.review-item.highlighted {
-  background: rgba(99, 102, 241, 0.12);
-  border-color: rgba(99, 102, 241, 0.4);
-  transform: scale(1.02);
-  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.1);
+/* Interactivity: Focus on Arrows */
+.chain-arrow.highlighted {
+  opacity: 1;
+  color: #ffffff;
+  text-shadow: 0 0 8px var(--accent-primary);
+  transform: scale(1.2);
 }
 
-.review-item.dimmed {
-  opacity: 0.25;
-  filter: blur(0.4px);
-  transform: scale(0.98);
+.chain-arrow.dimmed {
+  opacity: 0.15;
 }
 
 /* Pulse highlight on focused user button in absence panel */
@@ -364,21 +359,7 @@ main {
 }
 
 /* Responsive design */
-@media (max-width: 1000px) {
-  .weeks-container {
-    flex-direction: column;
-    gap: 20px;
-  }
 
-  .week-section {
-    min-width: 100%;
-  }
-
-  .week-section.current {
-    transform: scale(1); /* disable scale-up on mobile/tablet */
-    order: -1; /* Place current week at the top of the stack */
-  }
-}
 
 @media (max-width: 600px) {
   body {
@@ -387,14 +368,6 @@ main {
   
   .container {
     border-radius: 16px;
-  }
-  
-  .app-header {
-    padding: 30px 20px 15px;
-  }
-  
-  .app-title {
-    font-size: 1.85rem;
   }
   
   main {
@@ -411,17 +384,18 @@ main {
     font-size: 0.8rem;
   }
   
-  .review-item {
-    padding: 12px 14px;
+  .chain-container {
+    padding: 16px;
   }
-
-  .reviewer,
-  .reviewee {
+  
+  .chain-node {
+    padding: 6px 12px;
     font-size: 0.85rem;
+    border-radius: 8px;
   }
 
-  .arrow {
-    margin: 0 8px;
-    font-size: 0.95rem;
+  .chain-arrow {
+    font-size: 1rem;
+    padding: 0 2px;
   }
 }

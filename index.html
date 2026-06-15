@@ -3,17 +3,25 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Qui review qui ?</title>
+    <meta name="description" content="Qui review qui ? Système de rotation de revue de code sur 3 semaines pour les développeurs Seniors et Juniors." />
+    <title>Qui review qui ? - Planning de Code Review</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    
     <link rel="icon" type="image/x-icon" href="favicon.png" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <div class="container">
       <main>
-        <div class="absence-panel">
-          <div class="absence-title">Absences</div>
-          <div class="absence-buttons" id="absence-buttons"></div>
+        <div class="absence-panel" aria-labelledby="absence-title">
+          <div class="absence-title" id="absence-title">Gestion des Absences</div>
+          <div class="absence-buttons" id="absence-buttons" role="group" aria-label="Liste des participants pour basculer les absences"></div>
         </div>
+        
         <div id="weeks-container" class="weeks-container">
           <!-- Les semaines seront générées ici par JavaScript -->
         </div>

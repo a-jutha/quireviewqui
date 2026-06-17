@@ -334,24 +334,119 @@ function renderAbsencePanel() {
   });
 }
 
+// Carousel selectors and state management
+let carouselViewport, prevBtn, nextBtn, dotsContainer;
+
+function initCarousel() {
+  carouselViewport = document.getElementById("carousel-viewport");
+  prevBtn = document.getElementById("carousel-prev");
+  nextBtn = document.getElementById("carousel-next");
+  dotsContainer = document.getElementById("carousel-dots");
+
+  // Listen to viewport scroll events to spy on active card
+  carouselViewport.addEventListener("scroll", updateCarouselState);
+
+  // Button navigation
+  prevBtn.addEventListener("click", () => {
+    const activeIndex = getActiveIndex();
+    scrollToCard(activeIndex - 1);
+  });
+
+  nextBtn.addEventListener("click", () => {
+    const activeIndex = getActiveIndex();
+    scrollToCard(activeIndex + 1);
+  });
+}
+
+function getActiveIndex() {
+  const cards = carouselViewport.querySelectorAll(".week-section");
+  if (cards.length === 0) return 0;
+  
+  const viewportRect = carouselViewport.getBoundingClientRect();
+  const viewportCenter = viewportRect.left + viewportRect.width / 2;
+  
+  let closestIndex = 0;
+  let minDistance = Infinity;
+  
+  cards.forEach((card, index) => {
+    const rect = card.getBoundingClientRect();
+    const cardCenter = rect.left + rect.width / 2;
+    const distance = Math.abs(viewportCenter - cardCenter);
+    if (distance < minDistance) {
+      minDistance = distance;
+      closestIndex = index;
+    }
+  });
+  return closestIndex;
+}
+
+function scrollToCard(index) {
+  const cards = carouselViewport.querySelectorAll(".week-section");
+  if (index >= 0 && index < cards.length) {
+    cards[index].scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+  }
+}
+
+function updateCarouselState() {
+  if (!carouselViewport || !prevBtn || !nextBtn || !dotsContainer) return;
+  const cards = carouselViewport.querySelectorAll(".week-section");
+  if (cards.length === 0) return;
+
+  const activeIndex = getActiveIndex();
+
+  // Update dots
+  const dots = dotsContainer.querySelectorAll(".carousel-dot");
+  dots.forEach((dot, idx) => {
+    if (idx === activeIndex) {
+      dot.classList.add("active");
+    } else {
+      dot.classList.remove("active");
+    }
+  });
+
+  // Enable/disable navigation buttons
+  prevBtn.disabled = activeIndex === 0;
+  nextBtn.disabled = activeIndex === cards.length - 1;
+}
+
+function renderCarouselDots(count) {
+  if (!dotsContainer) return;
+  dotsContainer.innerHTML = "";
+  for (let i = 0; i < count; i++) {
+    const dot = document.createElement("button");
+    dot.className = "carousel-dot";
+    if (i === 0) dot.classList.add("active");
+    dot.setAttribute("aria-label", `Aller à la semaine ${i + 1}`);
+    dot.addEventListener("click", () => {
+      scrollToCard(i);
+    });
+    dotsContainer.appendChild(dot);
+  }
+}
+
 // Affiche les reviews des 3 semaines dans le DOM
 function renderReviewList() {
   const { currentWeekIndex, cycleStartDate } = getCycleInfo();
   const weeksContainer = document.getElementById("weeks-container");
   weeksContainer.innerHTML = "";
 
-  // Générer et ajouter les 3 semaines
-  for (let i = 0; i < 3; i++) {
-    const weekNum = i + 1;
-    const isCurrent = i === currentWeekIndex;
-    const weekStartDate = new Date(cycleStartDate.getTime() + i * 7 * 24 * 60 * 60 * 1000);
+  // Générer et ajouter les 3 semaines en commençant par la semaine actuelle
+  for (let offset = 0; offset < 3; offset++) {
+    const weekNum = ((currentWeekIndex + offset) % 3) + 1;
+    const isCurrent = offset === 0;
+    const weekStartDate = new Date(cycleStartDate.getTime() + (currentWeekIndex + offset) * 7 * 24 * 60 * 60 * 1000);
     weeksContainer.appendChild(createWeekSection(weekNum, isCurrent, weekStartDate));
   }
+
+  // Initialise les indicateurs de position et met à jour l'état initial
+  renderCarouselDots(3);
+  updateCarouselState();
 }
 
 // Initialisation au chargement du DOM
 document.addEventListener("DOMContentLoaded", () => {
   loadState();
+  initCarousel();
   renderAbsencePanel();
   renderReviewList();
 });

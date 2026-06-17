@@ -184,16 +184,40 @@ main {
   border-radius: 4px;
 }
 
+/* Carousel Layout & Styling */
+.carousel-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.carousel-viewport {
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+  width: 100%;
+  padding: 16px 0; /* Prevents clipping of card shadow */
+}
+
+.carousel-viewport::-webkit-scrollbar {
+  display: none; /* Safari & Chrome */
+}
+
 /* Weeks Container & Layout */
 .weeks-container {
   display: flex;
-  flex-direction: column;
-  gap: 28px;
+  flex-direction: row;
+  gap: 24px;
+  width: 100%;
 }
 
 .week-section {
-  flex: 1;
-  min-width: 0; /* Prevents flex items from overflowing */
+  flex: 0 0 100%;
+  min-width: 0;
+  scroll-snap-align: center;
   display: flex;
   flex-direction: column;
   border-radius: 16px;
@@ -204,9 +228,83 @@ main {
 }
 
 .week-section.current {
-  transform: scale(1.01);
   border-color: var(--accent-primary);
   box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.12);
+}
+
+/* Carousel Navigation Buttons */
+.carousel-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1px solid var(--border-glass);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.carousel-nav-btn:hover:not(:disabled) {
+  background: #000000;
+  color: #ffffff;
+  border-color: #000000;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.16);
+  transform: translateY(-50%) scale(1.08);
+}
+
+.carousel-nav-btn:active:not(:disabled) {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.carousel-nav-btn:disabled {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-50%) scale(0.8);
+}
+
+.carousel-nav-btn.prev-btn {
+  left: -23px;
+}
+
+.carousel-nav-btn.next-btn {
+  right: -23px;
+}
+
+/* Carousel Dots */
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.carousel-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 0;
+}
+
+.carousel-dot:hover {
+  background: var(--text-secondary);
+}
+
+.carousel-dot.active {
+  background: var(--accent-primary);
+  width: 20px;
+  border-radius: 9999px;
 }
 
 /* Week Header */
@@ -323,6 +421,20 @@ main {
 }
 
 /* Responsive design */
+@media (max-width: 768px) {
+  .carousel-nav-btn {
+    display: none;
+  }
+  
+  .carousel-viewport {
+    padding: 16px 20px;
+  }
+  
+  .week-section {
+    flex: 0 0 calc(100% - 40px);
+  }
+}
+
 @media (max-width: 600px) {
   body {
     padding: 20px 10px;

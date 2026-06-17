@@ -22,9 +22,23 @@
           <div class="absence-buttons" id="absence-buttons" role="group" aria-label="Liste des participants pour basculer les absences"></div>
         </div>
         
-        <div id="weeks-container" class="weeks-container">
-          <!-- Les semaines seront générées ici par JavaScript -->
+        <div class="carousel-container">
+          <button class="carousel-nav-btn prev-btn" id="carousel-prev" aria-label="Semaine précédente" disabled>
+            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+          
+          <div class="carousel-viewport" id="carousel-viewport">
+            <div id="weeks-container" class="weeks-container">
+              <!-- Les semaines seront générées ici par JavaScript -->
+            </div>
+          </div>
+          
+          <button class="carousel-nav-btn next-btn" id="carousel-next" aria-label="Semaine suivante">
+            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
         </div>
+        
+        <div class="carousel-dots" id="carousel-dots"></div>
       </main>
     </div>
 

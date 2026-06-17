@@ -248,8 +248,8 @@ function createWeekSection(weekNumber, isCurrent, weekStartDate) {
     chainContainer.appendChild(emptyMsg);
   } else {
     // Reconstruire le cycle à partir de la liste des reviews
-    const present = PARTICIPANTS.filter((p) => !absentParticipants.has(p));
-    const startNode = present[0];
+    const loop = WEEK_LOOPS[weekNumber] || PARTICIPANTS;
+    const startNode = loop.find((p) => !absentParticipants.has(p)) || PARTICIPANTS.find((p) => !absentParticipants.has(p));
     
     const cycleNodes = [];
     let current = startNode;

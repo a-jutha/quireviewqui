@@ -24,8 +24,8 @@ const ROLES = {
 // Chaque participant review le suivant dans sa boucle respective
 const WEEK_LOOPS = {
   1: ["Antoine", "François", "Awena", "Florian", "Daren", "Jutha", "Minh Anh"],
-  2: ["François", "Florian", "Daren", "Jutha", "Minh Anh", "Antoine", "Awena"],
-  3: ["Florian", "Jutha", "Minh Anh", "Antoine", "Awena", "François", "Daren"],
+  2: ["Jutha", "Awena", "François", "Daren", "Florian", "Minh Anh", "Antoine"],
+  3: ["Awena", "Antoine", "Minh Anh", "François", "Daren", "Jutha", "Florian"],
 };
 
 // Date de début de la semaine 1 : 15 juin 2026 (lundi)

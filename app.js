@@ -1,31 +1,27 @@
 // Liste des participants (ordre d'affichage initial)
 const PARTICIPANTS = [
-  "Antoine",
   "François",
   "Awena",
   "Florian",
   "Daren",
-  "Jutha",
   "Minh Anh",
 ];
 
 // Rôles des participants (S = Senior, J = Junior)
 const ROLES = {
-  "Antoine": "S",
   "François": "S",
   "Awena": "J",
   "Florian": "S",
   "Daren": "J",
-  "Jutha": "S",
   "Minh Anh": "J",
 };
 
 // Boucles de review prédéfinies pour les 3 semaines
 // Chaque participant review le suivant dans sa boucle respective
 const WEEK_LOOPS = {
-  1: ["Antoine", "François", "Awena", "Florian", "Daren", "Jutha", "Minh Anh"],
-  2: ["Jutha", "Awena", "François", "Daren", "Florian", "Minh Anh", "Antoine"],
-  3: ["Awena", "Antoine", "Minh Anh", "François", "Daren", "Jutha", "Florian"],
+  1: ["François", "Awena", "Florian", "Daren", "Minh Anh"],
+  2: ["Awena", "François", "Daren", "Florian", "Minh Anh"],
+  3: ["Awena", "Minh Anh", "François", "Daren", "Florian"],
 };
 
 // Date de début de la semaine 1 : 15 juin 2026 (lundi)
